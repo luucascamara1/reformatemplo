@@ -163,52 +163,35 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--r-dk);color:var(--white);font-size:14px;font-weight:600;padding:12px 22px;border-radius:10px;border:1px solid rgba(196,154,0,0.3);z-index:9999;opacity:1;transition:opacity 0.4s;}
 .hidden{display:none!important;}
 
+.mob-menu-btn{display:none;}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:399;}
+.mob-overlay.open{display:block;}
+
 /* ══ RESPONSIVE MOBILE ══ */
-
-/* menu toggle — escondido por padrão no desktop */
-.menu-toggle{display:none;}
-.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:399;}
-.sb-overlay.open{display:block;}
-
 @media (max-width:768px){
-  /* pull tab — sempre visível no mobile */
-  .sb-pull-tab{display:flex !important;}
-
-  /* header */
-  .hdr{padding:0 1rem;height:62px;}
-  .hdr-title{font-size:16px;}
+  :root{--sw:0px;}
+  .mob-menu-btn{
+    display:flex !important;
+    align-items:center;justify-content:center;
+    width:46px;height:46px;border-radius:12px;
+    background:rgba(196,154,0,0.2);
+    border:2px solid var(--a-md);
+    color:var(--a-md);font-size:24px;
+    cursor:pointer;flex-shrink:0;
+  }
+  .hdr{padding:0 1rem;height:60px;}
+  .hdr-title{font-size:15px;}
   .hdr-sub{display:none;}
-
-  /* botão hamburguer — maior e mais destacado */
-  .menu-toggle{
-    display:flex;align-items:center;justify-content:center;
-    width:44px;height:44px;border-radius:10px;
-    background:rgba(196,154,0,0.25);border:1.5px solid rgba(196,154,0,0.5);
-    cursor:pointer;color:var(--a-md);font-size:24px;flex-shrink:0;
-  }
-
-  /* sidebar: escondida fora da tela, abre com .open */
-  .app{display:flex;}
-  .sb{
-    position:fixed;left:-285px;top:0;bottom:0;
-    width:280px;height:100vh;
-    z-index:400;transition:left 0.28s ease;
-    overflow-y:auto;
-  }
+  .sb{position:fixed;left:-280px;top:0;bottom:0;width:275px;height:100vh;z-index:400;transition:left 0.28s ease;overflow-y:auto;}
   .sb.open{left:0;}
-
-  /* content ocupa tudo */
   .content{flex:1;margin-left:0;}
-
-  /* hero */
-  .hero{padding:1.25rem 1rem;}
+  .hero{padding:1.25rem 1rem 1.5rem;}
   .hero-inner{flex-direction:column;gap:0;}
-  .hero-foto-desktop{display:none!important;}
+  .hero-foto-desktop{display:none !important;}
   .hero-foto-mobile{display:block;}
+  .hero-foto-mobile img{width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:2px solid rgba(196,154,0,0.35);margin-bottom:1.25rem;}
   .hero-title{font-size:22px;}
-  .hero-sub{font-size:13px;margin-bottom:1rem;}
-
-  /* main */
+  .hero-sub{font-size:13px;margin-bottom:0.75rem;}
   .main{padding:1rem;}
   .grid2{grid-template-columns:1fr;gap:1rem;}
   .metrics{grid-template-columns:1fr 1fr;gap:10px;}
@@ -226,13 +209,11 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
   .tl-phase{font-size:14px;}
   .lbox{width:calc(100vw - 2rem);padding:1.75rem 1.25rem;}
 }
-
 @media (max-width:400px){
   .metrics{grid-template-columns:1fr;}
   .fgrid{grid-template-columns:1fr;}
   .cgrid{grid-template-columns:1fr;}
   .scards{grid-template-columns:1fr;}
-  .mc-value{font-size:18px;}
 }
 </style>
 </head>
@@ -265,9 +246,8 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
     <div class="hdr-sub">Painel de acompanhamento</div>
   </div>
 </div>
-<div class="sb-overlay" id="sbOverlay"></div>
-<div class="sb-pull-tab" id="sbPullTab"><i class="ti ti-chevron-right"></i></div>
 
+<div class="mob-overlay" id="mobOverlay"></div>
 <div class="app">
   <aside class="sb">
     <div class="sb-logo">
@@ -1412,6 +1392,30 @@ document.addEventListener('DOMContentLoaded',function(){
       if(dx<-60 && sb.classList.contains('open')) closeSb();
     },{passive:true});
   }
+
+
+  // mobile menu
+  (function(){
+    var btn=document.getElementById('mobMenuBtn');
+    var ov=document.getElementById('mobOverlay');
+    var sb=document.querySelector('.sb');
+    if(!btn||!ov||!sb) return;
+    function isMob(){return window.innerWidth<=768;}
+    function openM(){sb.classList.add('open');ov.classList.add('open');}
+    function closeM(){sb.classList.remove('open');ov.classList.remove('open');}
+    btn.addEventListener('click',function(){sb.classList.contains('open')?closeM():openM();});
+    ov.addEventListener('click',closeM);
+    document.querySelectorAll('.nav-item,.setor-btn').forEach(function(el){
+      el.addEventListener('click',function(){if(isMob())closeM();});
+    });
+    var tx=0;
+    document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+    document.addEventListener('touchend',function(e){
+      var dx=e.changedTouches[0].clientX-tx;
+      if(dx>60&&tx<50)openM();
+      if(dx<-60)closeM();
+    },{passive:true});
+  })();
 
   // garantir foto capa da Junção se ainda não tiver
   if(!dados['Junção'].foto_capa){
