@@ -1347,6 +1347,33 @@ document.addEventListener('DOMContentLoaded',function(){
   eid('btnLogout').addEventListener('click',logout);
 
   /* init */
+
+  // MOBILE MENU
+  (function(){
+    var ov=document.getElementById('mobOv');
+    var ar=document.getElementById('mobArrow');
+    var sb=document.querySelector('.sb');
+    if(!ov||!ar||!sb) return;
+    function isMob(){return window.innerWidth<=768;}
+    function refresh(){ar.style.display=isMob()?'block':'none';}
+    function openSb(){sb.classList.add('open');ov.classList.add('open');ar.style.display='none';}
+    function closeSb(){sb.classList.remove('open');ov.classList.remove('open');if(isMob())ar.style.display='block';}
+    refresh();
+    window.addEventListener('resize',function(){refresh();if(!isMob())closeSb();});
+    ar.addEventListener('click',openSb);
+    ov.addEventListener('click',closeSb);
+    document.querySelectorAll('.nav-item,.setor-btn').forEach(function(el){
+      el.addEventListener('click',function(){if(isMob())closeSb();});
+    });
+    var tx=0;
+    document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+    document.addEventListener('touchend',function(e){
+      var dx=e.changedTouches[0].clientX-tx;
+      if(dx>55&&tx<40)openSb();
+      if(dx<-55)closeSb();
+    },{passive:true});
+  })();
+
   selecionarSetor(setorAtivo);
   renderEtapas(setorAtivo);
   renderHeroFoto(setorAtivo);
