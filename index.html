@@ -171,7 +171,10 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
 .sb-overlay.open{display:block;}
 
 @media (max-width:768px){
-  /* header maior e mais visível */
+  /* pull tab — sempre visível no mobile */
+  .sb-pull-tab{display:flex !important;}
+
+  /* header */
   .hdr{padding:0 1rem;height:62px;}
   .hdr-title{font-size:16px;}
   .hdr-sub{display:none;}
