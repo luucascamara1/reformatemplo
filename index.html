@@ -241,9 +241,12 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
 </div>
 
 <div class="hdr">
-  <div>
-    <div class="hdr-title">Reforma Templo Jurumê</div>
-    <div class="hdr-sub">Painel de acompanhamento</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button id="mobMenuBtn" style="display:none;width:46px;height:46px;border-radius:12px;background:rgba(196,154,0,0.2);border:2px solid #C49A00;color:#C49A00;font-size:24px;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;"><i class="ti ti-menu-2"></i></button>
+    <div>
+      <div class="hdr-title">Reforma Templo Jurumê</div>
+      <div class="hdr-sub">Painel de acompanhamento</div>
+    </div>
   </div>
 </div>
 
@@ -1403,6 +1406,9 @@ document.addEventListener('DOMContentLoaded',function(){
     function isMob(){return window.innerWidth<=768;}
     function openM(){sb.classList.add('open');ov.classList.add('open');}
     function closeM(){sb.classList.remove('open');ov.classList.remove('open');}
+    // mostrar botão no mobile
+    if(window.innerWidth<=768) btn.style.display='flex';
+    window.addEventListener('resize',function(){ btn.style.display=window.innerWidth<=768?'flex':'none'; if(window.innerWidth>768){closeM();} });
     btn.addEventListener('click',function(){sb.classList.contains('open')?closeM():openM();});
     ov.addEventListener('click',closeM);
     document.querySelectorAll('.nav-item,.setor-btn').forEach(function(el){
