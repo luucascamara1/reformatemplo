@@ -165,44 +165,23 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
 
 /* ══ RESPONSIVE MOBILE ══ */
 @media (max-width:768px){
-  :root{--sw:0px;}
+  :root{--sw:200px;}
 
   /* header */
-  .hdr{padding:0 1rem;height:56px;}
+  .hdr{padding:0 1rem 0 calc(200px + 1rem);height:56px;}
   .hdr-title{font-size:15px;}
   .hdr-sub{display:none;}
 
-  /* sidebar vira bottom nav */
-  .sb{
-    width:100%;height:auto;
-    position:fixed;bottom:0;left:0;right:0;top:auto;
-    flex-direction:row;border-right:none;
-    border-top:1px solid rgba(196,154,0,0.2);
-    z-index:200;overflow-x:auto;overflow-y:hidden;
-    padding:0;
-  }
-  .sb-logo{display:none;}
-  .sb-sec{display:none;}
-  .sb-div{display:none;}
-  .sb-bottom{display:none;}
-  #sbSetores{display:none;}
-
-  /* nav items viram tabs horizontais */
-  .nav-item{
-    flex-direction:column;gap:2px;padding:8px 12px;
-    font-size:10px;border-left:none;border-top:2px solid transparent;
-    min-width:52px;justify-content:center;align-items:center;
-    white-space:nowrap;flex-shrink:0;
-  }
-  .nav-item i{font-size:20px;}
-  .nav-item.active{border-left:none;border-top-color:var(--a-md);color:var(--a-md);}
-
-  /* content */
-  .content{margin-bottom:70px;}
-  .app{flex-direction:column;}
+  /* sidebar — mantém como está, só reduz largura */
+  .sb{width:200px;}
+  .sb-img{width:60px;height:60px;}
+  .sb-name{font-size:13px;}
+  .nav-item{padding:9px 1rem;font-size:14px;}
+  .nav-item i{font-size:16px;}
+  .setor-btn{font-size:12px;padding:6px 1rem;}
 
   /* hero */
-  .hero{padding:1.25rem 1rem 1.25rem;}
+  .hero{padding:1.25rem 1rem;}
   .hero-inner{flex-direction:column;gap:0;}
   .hero-foto-desktop{display:none!important;}
   .hero-foto-mobile{display:block;}
@@ -240,13 +219,45 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
   .lbox{width:calc(100vw - 2rem);padding:1.75rem 1.25rem;}
 }
 
-@media (max-width:400px){
+@media (max-width:480px){
+  :root{--sw:0px;}
+  .hdr{padding:0 1rem;height:56px;}
+  .sb{
+    position:fixed;left:-260px;top:0;bottom:0;width:260px;
+    height:100vh;z-index:400;transition:left 0.3s ease;
+    border-right:1px solid rgba(196,154,0,0.3);
+  }
+  .sb.open{left:0;}
+  .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:399;}
+  .sb-overlay.open{display:block;}
+  .menu-toggle{
+    display:flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:8px;
+    background:rgba(196,154,0,0.15);border:none;cursor:pointer;
+    color:var(--a-md);font-size:20px;flex-shrink:0;
+  }
+  .content{margin-left:0;}
+  .main{padding:1rem;}
+  .grid2{grid-template-columns:1fr;gap:1rem;}
+  .metrics{grid-template-columns:1fr 1fr;gap:8px;}
+  .mc{padding:0.875rem;}
+  .mc-value{font-size:18px;}
+  .fgrid{grid-template-columns:1fr 1fr;}
+  .cgrid{grid-template-columns:1fr 1fr;}
+  .scards{grid-template-columns:1fr 1fr;}
+  .frow{grid-template-columns:1fr;}
+  .pub-box{flex-direction:column;gap:1rem;}
+  .pub-box .pub-btn{width:100%;justify-content:center;}
+  .lbox{width:calc(100vw - 2rem);padding:1.5rem 1.25rem;}
+  .hero{padding:1rem;}
+  .hero-title{font-size:20px;}
+}
+
+@media (max-width:360px){
   .metrics{grid-template-columns:1fr;}
   .fgrid{grid-template-columns:1fr;}
   .cgrid{grid-template-columns:1fr;}
   .scards{grid-template-columns:1fr;}
-  .nav-item{padding:8px 8px;min-width:44px;font-size:9px;}
-  .nav-item i{font-size:18px;}
 }
 </style>
 </head>
@@ -274,11 +285,15 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
 </div>
 
 <div class="hdr">
-  <div>
-    <div class="hdr-title">Reforma Templo Jurumê</div>
-    <div class="hdr-sub">Painel de acompanhamento</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="menu-toggle hidden" id="menuToggle" style="display:none;"><i class="ti ti-menu-2"></i></button>
+    <div>
+      <div class="hdr-title">Reforma Templo Jurumê</div>
+      <div class="hdr-sub">Painel de acompanhamento</div>
+    </div>
   </div>
 </div>
+<div class="sb-overlay" id="sbOverlay"></div>
 
 <div class="app">
   <aside class="sb">
@@ -1390,6 +1405,38 @@ document.addEventListener('DOMContentLoaded',function(){
   eid('btnLogout').addEventListener('click',logout);
 
   /* init */
+  // hamburger menu para mobile pequeno
+  var toggle = document.getElementById('menuToggle');
+  var overlay = document.getElementById('sbOverlay');
+  var sb = document.querySelector('.sb');
+  if(toggle){
+    // mostrar só em telas pequenas
+    if(window.innerWidth <= 480){
+      toggle.style.display='flex';
+    }
+    window.addEventListener('resize',function(){
+      toggle.style.display = window.innerWidth<=480?'flex':'none';
+      if(window.innerWidth>480){ sb.classList.remove('open'); overlay.classList.remove('open'); }
+    });
+    toggle.addEventListener('click',function(){
+      sb.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+    overlay.addEventListener('click',function(){
+      sb.classList.remove('open');
+      overlay.classList.remove('open');
+    });
+    // fechar ao clicar em item do menu
+    document.querySelectorAll('.nav-item,.setor-btn').forEach(function(el){
+      el.addEventListener('click',function(){
+        if(window.innerWidth<=480){
+          sb.classList.remove('open');
+          overlay.classList.remove('open');
+        }
+      });
+    });
+  }
+
   selecionarSetor(setorAtivo);
   renderEtapas(setorAtivo);
   renderHeroFoto(setorAtivo);
