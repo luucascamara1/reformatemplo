@@ -241,16 +241,14 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
 </div>
 
 <div class="hdr">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <button id="mobMenuBtn" style="display:none;width:46px;height:46px;border-radius:12px;background:rgba(196,154,0,0.2);border:2px solid #C49A00;color:#C49A00;font-size:24px;cursor:pointer;flex-shrink:0;align-items:center;justify-content:center;"><i class="ti ti-menu-2"></i></button>
-    <div>
-      <div class="hdr-title">Reforma Templo Jurumê</div>
-      <div class="hdr-sub">Painel de acompanhamento</div>
-    </div>
+  <div>
+    <div class="hdr-title">Reforma Templo Jurumê</div>
+    <div class="hdr-sub">Painel de acompanhamento</div>
   </div>
 </div>
 
 <div class="mob-overlay" id="mobOverlay"></div>
+<div id="mobChevron" style="display:none;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:500;cursor:pointer;padding:18px 8px 18px 4px;"><i class="ti ti-chevron-right" style="font-size:52px;color:#C49A00;filter:drop-shadow(2px 2px 6px rgba(0,0,0,0.7));display:block;line-height:1;"></i></div>
 <div class="app">
   <aside class="sb">
     <div class="sb-logo">
@@ -1404,12 +1402,17 @@ document.addEventListener('DOMContentLoaded',function(){
     var sb=document.querySelector('.sb');
     if(!btn||!ov||!sb) return;
     function isMob(){return window.innerWidth<=768;}
-    function openM(){sb.classList.add('open');ov.classList.add('open');}
-    function closeM(){sb.classList.remove('open');ov.classList.remove('open');}
-    // mostrar botão no mobile
-    if(window.innerWidth<=768) btn.style.display='flex';
-    window.addEventListener('resize',function(){ btn.style.display=window.innerWidth<=768?'flex':'none'; if(window.innerWidth>768){closeM();} });
-    btn.addEventListener('click',function(){sb.classList.contains('open')?closeM():openM();});
+    function openM(){sb.classList.add('open');ov.classList.add('open');if(chev)chev.style.display='none';}
+    function closeM(){sb.classList.remove('open');ov.classList.remove('open');if(chev&&isMob())chev.style.display='block';}
+    var chev=document.getElementById('mobChevron');
+    function isMob(){return window.innerWidth<=768;}
+    function showChev(){if(chev) chev.style.display=isMob()?'block':'none';}
+    showChev();
+    window.addEventListener('resize',function(){showChev();if(!isMob())closeM();});
+    if(chev){
+      chev.addEventListener('click',function(){sb.classList.contains('open')?closeM():openM();});
+    }
+    if(btn) btn.addEventListener('click',function(){sb.classList.contains('open')?closeM():openM();});
     ov.addEventListener('click',closeM);
     document.querySelectorAll('.nav-item,.setor-btn').forEach(function(el){
       el.addEventListener('click',function(){if(isMob())closeM();});
