@@ -257,15 +257,13 @@ body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--text);m
 </div>
 
 <div class="hdr">
-  <div style="display:flex;align-items:center;gap:10px;">
-    <button class="menu-toggle" id="menuToggle"><i class="ti ti-menu-2"></i></button>
-    <div>
-      <div class="hdr-title">Reforma Templo Jurumê</div>
-      <div class="hdr-sub">Painel de acompanhamento</div>
-    </div>
+  <div>
+    <div class="hdr-title">Reforma Templo Jurumê</div>
+    <div class="hdr-sub">Painel de acompanhamento</div>
   </div>
 </div>
 <div class="sb-overlay" id="sbOverlay"></div>
+<div class="sb-pull-tab" id="sbPullTab"><i class="ti ti-chevron-right"></i></div>
 
 <div class="app">
   <aside class="sb">
@@ -1378,27 +1376,38 @@ document.addEventListener('DOMContentLoaded',function(){
   eid('btnLogout').addEventListener('click',logout);
 
   /* init */
-  // hamburger menu mobile
-  var toggle = document.getElementById('menuToggle');
+  // pull tab menu mobile
+  var pullTab = document.getElementById('sbPullTab');
   var overlay = document.getElementById('sbOverlay');
   var sb = document.querySelector('.sb');
-  if(toggle && overlay && sb){
-    toggle.addEventListener('click',function(){
-      sb.classList.toggle('open');
-      overlay.classList.toggle('open');
+  function openSb(){
+    sb.classList.add('open');
+    overlay.classList.add('open');
+    pullTab.classList.add('open');
+  }
+  function closeSb(){
+    sb.classList.remove('open');
+    overlay.classList.remove('open');
+    pullTab.classList.remove('open');
+  }
+  if(pullTab && overlay && sb){
+    pullTab.addEventListener('click',function(){
+      sb.classList.contains('open') ? closeSb() : openSb();
     });
-    overlay.addEventListener('click',function(){
-      sb.classList.remove('open');
-      overlay.classList.remove('open');
-    });
+    overlay.addEventListener('click', closeSb);
     document.querySelectorAll('.nav-item,.setor-btn').forEach(function(el){
       el.addEventListener('click',function(){
-        if(window.innerWidth<=768){
-          sb.classList.remove('open');
-          overlay.classList.remove('open');
-        }
+        if(window.innerWidth<=768) closeSb();
       });
     });
+    // swipe direita para abrir, swipe esquerda para fechar
+    var touchStartX=0;
+    document.addEventListener('touchstart',function(e){ touchStartX=e.touches[0].clientX; },{passive:true});
+    document.addEventListener('touchend',function(e){
+      var dx=e.changedTouches[0].clientX - touchStartX;
+      if(dx>60 && touchStartX<40) openSb();
+      if(dx<-60 && sb.classList.contains('open')) closeSb();
+    },{passive:true});
   }
 
   // garantir foto capa da Junção se ainda não tiver
